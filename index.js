@@ -1,8 +1,11 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
+
 const Engineer = require ("./lib/Engineer");
 const Intern = require ("./lib/Intern");
 const Manager = require ("./lib/Manager");
+
+const team = [];
 
 function newMember() {
     inquirer.prompt ([{
@@ -37,26 +40,46 @@ function newMember() {
         name: "roleInfo"
     },
     {
-        type: "list",
+        type: "confirm",
         message: "Would you like to add additional team members?",
-        choices: [
-            "Yes",
-            "No"
-        ],
+        default: false,
         name: "additionalMembers"
     }])
-    .then(function({roleInfo, newMembers}){
-        let additionalMembers;
+    .then(function({roleInfo, additionalMembers}){
+        // let {additionalMembers} = newMembers;
+        let newEmployee;
         if (role === "Intern") {
-            additionalMembers = new Intern(name, id, email, roleInfo);
+            newEmployee = new Intern(name, id, email, roleInfo);
         } else if (role === "Manager") {
-            additionalMembers = new Manager(name, id, email, roleInfo);
+            newEmployee = new Manager(name, id, email, roleInfo);
         } else {
-            additionalMembers = new Engineer(name, id, email, roleInfo);
+            newEmployee = new Engineer(name, id, email, roleInfo);
         }
 
+        team.push(newEmployee);
+        console.log(team)
+
+        if (additionalMembers) {
+            newMember(team);
+        } else {
+            return writeFile();
+            // console.log(team);
+        }
     })
     })
 };
+
+const writeFile = data => {
+    fs.writeFile('./output/index.html', data, err => {
+        // if there is an error 
+        if (err) {
+            console.log(err);
+            return;
+        // when the profile has been created 
+        } else {
+            console.log("Your team profile has been successfully created! Please check out the index.html")
+        }
+    })
+}; 
 
 newMember();
