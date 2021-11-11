@@ -8,8 +8,8 @@ const Manager = require ("./lib/Manager");
 
 const team = [];
 
-function newMember() {
-    inquirer.prompt ([{
+const newMember = () => {
+    return inquirer.prompt ([{
         message: "Enter team member's name",
         name: "name"
     },
@@ -36,7 +36,7 @@ function newMember() {
         } else {
             roleInfo = "Github username";
         }
-    inquirer.prompt([{
+    return inquirer.prompt([{
         message: `Enter team member's ${roleInfo}`,
         name: "roleInfo"
     },
@@ -63,7 +63,7 @@ function newMember() {
         if (additionalMembers) {
             newMember(team);
         } else {
-            return writeFile();
+            return console.log("Test");
             // console.log(team);
         }
     })
@@ -85,12 +85,12 @@ const writeFile = data => {
 
 
 newMember()
-.then(team => {
-    return newHTML(team)
-})
-.then(profileHTML => {
-    return writeFile(profileHTML)
-})
-.catch(err => {
-    console.log(err);
-});
+    .then(team => {
+        return newHTML(team)
+    })
+    .then(profileHTML => {
+        return writeFile(profileHTML)
+    })
+    .catch(err => {
+        console.log(err);
+    });

@@ -53,9 +53,9 @@ newHTML = (data) => {
     // empty array for sections
     htmlArray = [];
 
-    for (let i=0; i<data.length; i++) {
+    for (let i=0; i < data.length; i++) {
         const newEmployee = data[i];
-        const employeeRole = newEmployee.getRole();
+        const role = newEmployee.getRole();
 
         if (role === "Manager") {
             const managerSection = newManager(newEmployee);
