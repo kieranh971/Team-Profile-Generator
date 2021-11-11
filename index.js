@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
+const newHTML = require("./src/newHTML")
 
 const Engineer = require ("./lib/Engineer");
 const Intern = require ("./lib/Intern");
@@ -77,9 +78,19 @@ const writeFile = data => {
             return;
         // when the profile has been created 
         } else {
-            console.log("Your team profile has been successfully created! Please check out the index.html")
+            console.log("Your team has been created! Please view the HTML file.")
         }
     })
 }; 
 
-newMember();
+
+newMember()
+.then(team => {
+    return newHTML(team)
+})
+.then(profileHTML => {
+    return writeFile(profileHTML)
+})
+.catch(err => {
+    console.log(err);
+});
