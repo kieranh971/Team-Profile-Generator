@@ -1,104 +1,65 @@
-// Generates Manager section
-const newManager = function(Manager) {
-    return 
-    `
-        <div class="col-6">
-            <div class="card mx-auto" style="width: 18rem">
-                <h5 class="card-header">${Manager.name}<br /><br />Role</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">${Manager.id}</li>
-                    <li class="list-group-item">${Manager.email}</li>
-                    <li class="list-group-item">${Manager.officeNumber}</li>
-                </ul>
-            </div>
-        </div>
-    `;
+const path = require("path");
+const fs = require("fs");
+
+const templateDir = path.resolve(__dirname, "../template");
+
+const newHTML = employees => {
+    const html = [];
+
+    // Order the roles: 1-Manager, 2-Engineers, 3-Interns
+
+    html.push(...employees
+        .filter(employee => employee.getRole() === "Manager")
+        .map(manager => renderManager(manager))
+        );
+    html.push(...employees
+        .filter(employee => employee.getRole() === "Engineer")
+        .map(engineer => renderEngineer(engineer))
+        );
+    html.push(...employees
+        .filter(employee => employee.getRole() === "Intern")
+        .map(intern => renderIntern(intern))
+        );
+    return renderHTML(html.join(""));
+};
+// Render Manager info
+const renderManager = manager => {
+    let template = fs.readFileSync(path.resolve(templateDir, "Manager.html"), "utf8");
+    template = replaceTemplates(template, "name", manager.getName());
+    template = replaceTemplates(template, "role", manager.getRole());
+    template = replaceTemplates(template, "email", manager.getEmail());
+    template = replaceTemplates(template, "id", manager.getId());
+    template = replaceTemplates(template, "officeNumber", manager.getOfficeNumber());
+    return template;
+}
+// Render Engineer info
+const renderEngineer = engineer => {
+    let template = fs.readFileSync(path.resolve(templateDir, "Engineer.html"), "utf8");
+    template = replaceTemplates(template, "name", engineer.getName());
+    template = replaceTemplates(template, "role", engineer.getRole());
+    template = replaceTemplates(template, "email", engineer.getEmail());
+    template = replaceTemplates(template, "id", engineer.getId());
+    template = replaceTemplates(template, "github", engineer.getGithub());
+    return template;
+}// Render Intern info
+const renderIntern = intern => {
+    let template = fs.readFileSync(path.resolve(templateDir, "Intern.html"), "utf8");
+    template = replaceTemplates(template, "name", intern.getName());
+    template = replaceTemplates(template, "role", intern.getRole());
+    template = replaceTemplates(template, "email", intern.getEmail());
+    template = replaceTemplates(template, "id", intern.getId());
+    template = replaceTemplates(template, "school", intern.getSchool());
+    return template;
 }
 
-// Generates Engineer section
-const newEngineer = function(Engineer) {
-    return 
-    `
-        <div class="col-6">
-            <div class="card mx-auto" style="width: 18rem">
-                <h5 class="card-header">${Engineer.name}<br /><br />Role</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">${Engineer.id}</li>
-                    <li class="list-group-item">${Engineer.email}</li>
-                    <li class="list-group-item">${Engineer.officeNumber}</li>
-                </ul>
-            </div>
-        </div>
-    `;
+const renderHTML = html => {
+    let template = fs.readFileSync(path.resolve(templateDir, "index.html"), "utf8");
+    return replaceTemplates(template, "team", html);
+};
+
+const replaceTemplates = (template, placeholder, value) => {
+    const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
+    return template.replace(pattern, value);
 }
 
-// Generates Intern section
-const newIntern = function(Intern) {
-    return 
-    `
-        <div class="col-6">
-            <div class="card mx-auto" style="width: 18rem">
-                <h5 class="card-header">${Intern.name}<br /><br />Role</h5>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">${Intern.id}</li>
-                    <li class="list-group-item">${Intern.email}</li>
-                    <li class="list-group-item">${Intern.officeNumber}</li>
-                </ul>
-            </div>
-        </div>
-    `;
-}
-
-newHTML = (data) => {
-    // empty array for sections
-    htmlArray = [];
-
-    for (let i=0; i < data.length; i++) {
-        const newEmployee = data[i];
-        const role = newEmployee.getRole();
-
-        if (role === "Manager") {
-            const managerSection = newManager(newEmployee);
-            htmlArray.push(managerSection);
-        }
-        if (role === "Engineer") {
-            const engineerSection = newEngineer(newEmployee);
-            htmlArray.push(engineerSection);
-        }
-        if (role === "Intern") {
-            const internSection = newIntern(newEmployee);
-            htmlArray.push(internSection);
-        }
-    }
-    const allEmployees = htmlArray.join('');
-    const newTeam = generateTeam(allEmployees);
-    return newTeam;
-}
-
-const generateTeam = function (allEmployees) {
-    return 
-    `
-    <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <title>Template Profile</title>
-    </head>
-    <body>
-        <nav class="navbar navbar-dark bg-dark mb-5">
-            <span class="navbar-brand mb-0 h1 w-100 text-center">Team Profile</span>
-        </nav>
-        <div class="container">
-            <div class="row">
-            ${allEmployees}
-            </div>
-        </div>
-        
-    </body>
-    `
-}
-
-module.exports = newHTML;
+module.exports = newHTML
